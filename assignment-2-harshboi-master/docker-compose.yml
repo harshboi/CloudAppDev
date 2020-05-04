@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+  api:
+    build: .
+    container_name: yelp-api
+    environment:
+      MONGO_HOST: database
+      MONGO_USER: harsh
+      MONGO_PASSWORD: hunter2
+      MONGO_DB_NAME: yelp
+    ports:
+      - "8000:8000"
+    networks:
+      - mongo-net
+    depends_on:
+      - "database"
+  database:
+    image: mongo:latest
+    container_name: mongodatabase
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: harsh
+      MONGO_INITDB_ROOT_PASSWORD: hunter2
+      MONGO_INITDB_DATABASE: yelp
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./mongo-init.js/:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - yelp-vol/:/data/db
+    networks:
+      - 'mongo-net'
+volumes:
+  yelp-vol:
+networks:
+  mongo-net:
+    driver: bridge
